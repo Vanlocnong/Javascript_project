@@ -22,6 +22,9 @@ const title = $('header h2')
 const cdThumb = $('.cd-thumb')
 const audio = $('#audio')
 const playBtn = $('.btn-toggle-play')
+const progressSong =$('#progress')
+
+
 
 
 const app = {
@@ -150,8 +153,29 @@ const app = {
             _this.isPlaying= false
             player.classList.remove('playing')
         }
+
+        //khi tien do bai hat thay doi
+        audio.ontimeupdate = function() {
+            // audio.currentTime : lay ra thoi gian hien tai
+            // audio.duration : lay ra tong thoi gian cua song or video thoi gian 
+            if(audio.duration){
+                const percentageProgress = Math.floor(audio.currentTime / audio.duration * 100)
+                progressSong.value = percentageProgress
+            }                     
+        }
+
+        // xu ly khi tua bai hat
+        progressSong.onchange = function(e){
+            const totalTimeSong = audio.duration
+            const valueWhileChange = e.target.value
+            const realTime = totalTimeSong / 100 * valueWhileChange
+            //set property curentTime = realTime vua tinh duocj ven tren
+            audio.currentTime = realTime
+            
+        }
     }
 },
+
 
     loadCurrentSong : function(){
         
@@ -176,7 +200,8 @@ const app = {
         //render playlist
         this.render();
         
+        console.log('Running ...')
+        
     }
 } 
-
 app.start()
