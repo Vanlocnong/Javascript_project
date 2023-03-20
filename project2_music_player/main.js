@@ -10,16 +10,17 @@
  * 7.newt / repeat when  ended - OK
  * 8.active song - OK
  * 9.scroll active song into view
- * 10.play song when click
+ * 10.play song when click - OK
  */
 
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
+const PLAYER_STORRAGE = 'F8_PLAYER';
 const playList = $('.playlist');
 const player = $('.player')
 const cd = $('.cd');
-const title = $('header h2');
+const title = $('header h2');          
 const cdThumb = $('.cd-thumb');
 const audio = $('#audio')
 const playBtn = $('.btn-toggle-play');
@@ -34,6 +35,7 @@ const app = {
     currentIndex :0 ,
     isRandom : false,
     isRepeat : false,
+    config : JSON.parse(localStorage.getItem(PLAYER_STORRAGE)) || {},
     songs:[
         {
             name:"Bach nguyet quang",
@@ -91,10 +93,14 @@ const app = {
         }
     
     ],
+    setConfig : function(key , value){
+        this.config[key] = value;
+        localStorage.setItem(PLAYER_STORRAGE , JSON.stringify(this.config))
+    },
     render: function(){
-        const htmls = this.songs.map(song => {
+        const htmls = this.songs.map((song , index) => {
             return `
-            <div class="song">
+            <div class="song ${index === this.currentIndex ? 'active' : ""}"data-index = "${index}">
                 <div
                 class="thumb"
                 style="
@@ -205,6 +211,8 @@ const app = {
         cdAnimation.play()
         
         _this.scrollToActiceSong()
+
+        _this.render()
         
         
     },
@@ -228,12 +236,14 @@ const app = {
     repeatButton.onclick = function(e){
         console.log('click repeat')
         _this.isRepeat = !_this.isRepeat
+        _this.setConfig('isRepeat', _this.isRepeat)
         e.target.classList.toggle('active' , _this.isRepeat)
     }
 
     //khi click nut random : bat / tat
     randomButton.onclick = function(e) {
         _this.isRandom = !_this.isRandom
+        _this.setConfig('isRandom', _this.isRandom)
         e.target.classList.toggle('active',_this.isRandom)
     }
 
@@ -247,7 +257,21 @@ const app = {
     }
 
     // ====== Lang nghe hanh vi click vao play list =====
-    
+    playList.onclick = function(e){
+        const songNode = e.target.closest('.song:not(.active)')
+        if ( songNode || (e.target.closest('.option'))) {
+            //xu ly khi click vao song
+            if (songNode){
+                console.log(songNode.dataset.index)
+                _this.currentIndex = Number(songNode.dataset.index)
+                _this.render()
+                _this.loadCurrentSong()
+                audio.play()
+                
+            }
+            //xu ly khi vao song option
+        }
+    }
     
 },
 
@@ -255,6 +279,11 @@ const app = {
         title.textContent = this.currentSongs.name
         cdThumb.style.backgroundImage = `url(${this.currentSongs.image})`
         audio.src = this.currentSongs.path  
+},
+    loadConfig : function(){
+        // this.isRandom = this.config.isRandom
+        // this.isRepeat = this.config.isRepeat
+        
 },
     nextSong : function() {
         this.currentIndex++
@@ -289,6 +318,8 @@ const app = {
         },500)
 },
     start: function() {
+        // gan cau hinh tu config vao ung dung
+        this.loadConfig();
         //render playlist
         this.render();
         //dinh nghia cac thuoc tinh cho Object
@@ -299,7 +330,10 @@ const app = {
         this.loadCurrentSong()
         console.log('Running ...')
         console.log(this.songs)
+
         
+        randomButton.classList.toggle('active',this.isRandom)
+        repeatButton.classList.toggle('active',this.isRepeat)
 }
 };
 

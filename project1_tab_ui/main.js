@@ -28,3 +28,6 @@ selectTabsItems.forEach((curr , index) => {
 
     }
 })
+
+
+
