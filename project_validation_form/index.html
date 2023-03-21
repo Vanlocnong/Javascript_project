@@ -76,7 +76,11 @@
           //nhan lai gia tri tu return cua cac ham , cam rules truyen vao validator
           rules : [
             validator.isRequired('#fullname'), //chay 1 ham
-            validator.isEmail('#email')      
+            validator.isEmail('#email')    ,
+            validator.checkPassword('#password', 7),
+            validator.confirmPassword('#password_confirmation' , function(){
+              return document.querySelector("#form-1 #password").value
+            })
           ]
         })
     </script>
