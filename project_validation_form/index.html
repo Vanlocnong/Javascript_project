@@ -71,15 +71,14 @@
     <script>
         //su dung validator da duoc dinh nghia ben validator.js
         validator({
-          form : '#form-1',
-          
-          //nhan lai gia tri tu return cua cac ham , cam rules truyen vao validator
+          form : "#form-1",
           rules : [
-            validator.isRequired('#fullname'), //chay 1 ham
-            validator.isEmail('#email')    ,
-            validator.checkPassword('#password', 7),
-            validator.confirmPassword('#password_confirmation' , function(){
-              return document.querySelector("#form-1 #password").value
+            validator.isRequired('#fullname'),
+            validator.isRequired('#email'),
+            validator.isEmail('#email'),
+            validator.isPassword('#password', 8),
+            validator.passwordConfirmation('#password_confirmation', function(){
+              return document.querySelector('#form-1 #password').value
             })
           ]
         })

@@ -1,84 +1,81 @@
-function validator (object){
+function validator  (object) {
 
+    var selectorRules = {}
 
-    //tao phuong thuc validat de kiem thuc hien kiem tra va cap nhat HTML
-    //dua vao value cua inputElement & ket qua tra tu pthuc test cua doi tuong 
-
-    function validate(inputElement , rule){
+    validate = function (inputElement , rules) {
         var formMessage = inputElement.parentElement.querySelector('.form-message')
-        var errorMessage = rule.test(inputElement.value)
-        if(errorMessage){
-            formMessage.innerHTML = errorMessage
+        var erroMessage;
+        
+        var ruleHandle;
+        
+        ruleHandle = selectorRules[rules.selector]
+        for (var i = 0 ; i < ruleHandle.length ; ++i) {
+            erroMessage = ruleHandle[i](inputElement.value)
+            if(erroMessage) break;
+        }
+
+        if(erroMessage) {
+            formMessage.innerHTML = erroMessage
             inputElement.parentElement.classList.add('invalid')
         }else {
             formMessage.innerHTML = ""
             inputElement.parentElement.classList.remove('invalid')
         }
     }
-    function clearErrorMessage (inputElement){
-        var formMessage = inputElement.parentElement.querySelector('.form-message')
-        formMessage.innerHTML = ""
-        inputElement.parentElement.classList.remove("invalid")
-    }
 
-    //lay ra form can validate
-    let formElement = document.querySelector(object.form)
+    var formElement = document.querySelector(object.form)
     if(formElement) {
-        object.rules.forEach(function(rule){
-            var inputElement = formElement.querySelector(rule.selector)
-            if(inputElement) {
-                inputElement.onblur = function() {
-                    validate(inputElement,rule)
-                }
-                inputElement.oninput = function () {
-                    clearErrorMessage(inputElement)
-                }
-                
-            }
-            
-        })
-    }
-}
-
-
-
-validator.isRequired = function(selector){
-    return {
-        selector : selector,
-        test : function (value){
-            return value.trim() ? undefined : "Vui long nhap fied nay"
-        }
-    }
-}
-
-validator.isEmail = function(selector){
-    return {
-        selector : selector,
-        test : function (value){
-            var checkEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-            return checkEmail.test(value) ? undefined : "Fied nay phai la Email"
-        }
-    }
-}
-
-validator.checkPassword = function (selector , min) {
-    return {
-        selector : selector,
-        test : function (value){
-            if (value.length >= min){
-                return undefined
+        object.rules.forEach(function(rule) {
+            if(Array.isArray(selectorRules[rule.selector])) {
+                selectorRules[rule.selector].push(rule.test)
             }else {
-                return "Mat khau khoi tao tu 7 ky tu tro len"
+                selectorRules[rule.selector] = [rule.test]
             }
+            var inputElement = formElement.querySelector(rule.selector)
+            inputElement.onblur = function() {
+                validate(inputElement , rule)
+            }
+        })
+        console.log(selectorRules)
+    }
+}
+
+
+
+
+validator.isRequired = function(selector) {
+    return {
+        selector : selector,
+        test : function (value) {
+            return value ? undefined : "Vui Long nhap truong nay"
         }
     }
 }
 
-validator.confirmPassword = function (selector , getConfirmValue) {
+validator.isEmail = function (selector) {
     return {
         selector : selector,
-        test : function (value){
-            return value === getConfirmValue() ? undefined : "Mat khau xac nhan khong trung khop"
+        test : function (value) {
+            var checkEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+            return checkEmail.test(value) ? undefined : "Truong nay phai la Email"
+        }
+    }
+}
+
+validator.isPassword = function (selector, minLength) {
+    return {
+        selector : selector,
+        test : function (value) {
+            return value.length >= minLength ? undefined : "Mat khau dang nhap tu 8 ky tu tro len"
+        }
+    }
+}
+
+validator.passwordConfirmation = function (selector, getPassword) {
+    return {
+        selector : selector,
+        test : function (value) {
+            return value === getPassword() ? undefined : "Mat khau xac nhan khong trung khop"
         }
     }
 }
