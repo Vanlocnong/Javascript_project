@@ -76,12 +76,17 @@
             validator.isRequired('#fullname'),
             validator.isRequired('#email'),
             validator.isEmail('#email'),
-            validator.isPassword('#password', 8),
+            validator.isRequired('#password'),
+            validator.isPassword('#password', 3),
+            validator.isRequired('#password_confirmation'),
             validator.passwordConfirmation('#password_confirmation', function(){
               return document.querySelector('#form-1 #password').value
             })
-          ]
-        })
+          ],
+          onSubmit : function (data){
+            console.log(data)
+          }
+        });
     </script>
   </body>
 </html>

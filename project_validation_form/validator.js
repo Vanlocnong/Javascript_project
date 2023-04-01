@@ -5,9 +5,7 @@ function validator  (object) {
     validate = function (inputElement , rules) {
         var formMessage = inputElement.parentElement.querySelector('.form-message')
         var erroMessage;
-        
         var ruleHandle;
-        
         ruleHandle = selectorRules[rules.selector]
         for (var i = 0 ; i < ruleHandle.length ; ++i) {
             erroMessage = ruleHandle[i](inputElement.value)
@@ -21,10 +19,34 @@ function validator  (object) {
             formMessage.innerHTML = ""
             inputElement.parentElement.classList.remove('invalid')
         }
+        return erroMessage;
     }
 
     var formElement = document.querySelector(object.form)
+    var nodeList = formElement.querySelectorAll('[name]')
+
     if(formElement) {
+        
+        formElement.onsubmit = function(e){
+            e.preventDefault();
+            var isFormValid = true;
+            object.rules.forEach(function(ele){
+                var inputElement = formElement.querySelector(ele.selector)
+                var isValid = validate(inputElement,ele)
+                if(isValid){
+                    isFormValid = false
+                }
+            })
+            if(isFormValid) {
+                var enableInput = formElement.querySelectorAll("[name]:not([disable])")
+                var formValue = Array.from(enableInput).reduce((acc , ele) => 
+                (acc[ele.name]  = ele.value) && acc
+                ,{})
+                
+                object.onSubmit(formValue)
+            }          
+        }
+        
         object.rules.forEach(function(rule) {
             if(Array.isArray(selectorRules[rule.selector])) {
                 selectorRules[rule.selector].push(rule.test)
@@ -36,7 +58,7 @@ function validator  (object) {
                 validate(inputElement , rule)
             }
         })
-        console.log(selectorRules)
+        
     }
 }
 
