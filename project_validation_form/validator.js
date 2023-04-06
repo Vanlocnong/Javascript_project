@@ -1,6 +1,7 @@
 function validator  (object) {
 
     var selectorRules = {}
+    
 
     validate = function (inputElement , rules) {
         var formMessage = inputElement.parentElement.querySelector('.form-message')
@@ -23,28 +24,30 @@ function validator  (object) {
     }
 
     var formElement = document.querySelector(object.form)
-    var nodeList = formElement.querySelectorAll('[name]')
+
 
     if(formElement) {
         
         formElement.onsubmit = function(e){
             e.preventDefault();
-            var isFormValid = true;
+            var isFormValid = true
             object.rules.forEach(function(ele){
                 var inputElement = formElement.querySelector(ele.selector)
-                var isValid = validate(inputElement,ele)
-                if(isValid){
-                    isFormValid = false
+                var validResult = validate(inputElement , ele)
+                if(validResult){
+                    isFormValid = false;
                 }
             })
-            if(isFormValid) {
+            
+            if(isFormValid){
                 var enableInput = formElement.querySelectorAll("[name]:not([disable])")
-                var formValue = Array.from(enableInput).reduce((acc , ele) => 
-                (acc[ele.name]  = ele.value) && acc
-                ,{})
-                
-                object.onSubmit(formValue)
-            }          
+                var formValue = Array.from(enableInput).reduce (function(acc,ele){
+                    acc[ele.name] = ele.value
+                    return acc
+                },{})
+            }
+            
+            object.onSubmit(formValue)
         }
         
         object.rules.forEach(function(rule) {

@@ -44,6 +44,13 @@ html {
     flex-direction: column;
 }
 
+.checkboxArea{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .form-label,
 .form-message {
     text-align: left;

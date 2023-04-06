@@ -63,15 +63,55 @@
           />
           <span class="form-message"></span>
         </div>
+        <div class="form-group">
+          <label for="genderCheck" class="form-label"
+            >Gender Check</label
+          >
+
+          <div class="checkboxArea">
+            <span class="genderLabel">Nam</span>
+            <input
+            name="genderCheck"
+            value = "Male"
+            type="radio"
+            class="form-control"
+          />
+          </div>
+          
+          <div class="checkboxArea">
+            <span class="genderLabel">Nu</span>
+            
+            <input
+            name="genderCheck"
+            value = "Female"
+            type="radio"
+            class="form-control"
+          />
+          </div>
+
+          <div class="checkboxArea">
+            <span class="genderLabel">Khac</span>
+            <input
+            name="genderCheck"
+            value = "Other"
+            type="radio"
+            class="form-control"
+          />
+          </div>
+          <span class="form-message"></span>
+        </div>
 
         <button class="form-submit">Đăng ký</button>
       </form>
     </div>
-    <script src="./validator.js"></script>
+    <!-- <script src="./validator.js"></script> -->
+    <script src="./validator2.js"></script>
+
     <script>
         //su dung validator da duoc dinh nghia ben validator.js
         validator({
           form : "#form-1",
+          formMessage: ".form-message",
           rules : [
             validator.isRequired('#fullname'),
             validator.isRequired('#email'),
@@ -79,12 +119,13 @@
             validator.isRequired('#password'),
             validator.isPassword('#password', 3),
             validator.isRequired('#password_confirmation'),
+            validator.isRequired('input[name = "genderCheck"]'),
             validator.passwordConfirmation('#password_confirmation', function(){
               return document.querySelector('#form-1 #password').value
             })
           ],
           onSubmit : function (data){
-            console.log(data)
+            
           }
         });
     </script>
